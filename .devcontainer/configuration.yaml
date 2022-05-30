@@ -3,6 +3,57 @@ default_config:
 logger:
   default: info
   logs:
-    custom_components.{{cookiecutter.domain_name}}: debug
-# If you need to debug uncommment the line below (doc: https://www.home-assistant.io/integrations/debugpy/)
+    custom_components.schedule_sensor: debug
+
+# If you need to debug uncomment the line below (doc: https://www.home-assistant.io/integrations/debugpy/)
 # debugpy:
+
+sensor:
+  - platform: schedule
+    name: Season
+    schedule:
+      - { name: "winter", date: "01/01" }
+      - { name: "spring", date: "03/21" }
+      - { name: "summer", date: "06/21" }
+      - { name: "fall", date: "09/1" }
+      - { name: "halloween", date: "9/21" }
+      - { name: "thanksgiving", date: "11/1" }
+      - { name: "christmas", date: "12/1" }
+
+  - platform: schedule
+    name: schedule
+    schedule:
+      - { name: wake, time: "5:00" }
+      - { name: breakfast, time: "6:00" }
+      - { name: day, time: "07:00" }
+      - { name: return, time: "15:30" }
+      - { name: dinner, time: "17:30" }
+      - { name: quiet, time: "19:30" }
+      - { name: bedtime, time: "20:30" }
+      - { name: sleep, time: "21:30" }
+
+automation:
+  - alias: Set Temperature Based On Work Days
+    trigger:
+    - platform: state
+      entity_id: sensor.schedule
+    action:
+      - service: logbook.log
+        data_template:
+          name: "Schedule"
+          message: >
+            {% set targets = {
+                "wake": { "heat": 66, "cool": 76 },
+                "breakfast": { "heat": 68, "cool": 76 },
+                "day": { "heat": 70, "cool": 76 },
+                "return": { "heat": 68, "cool": 76 },
+                "dinner": { "heat": 68, "cool": 76 },
+                "quiet": { "heat": 66, "cool": 76 },
+                "bedtime": { "heat": 64, "cool": 76 },
+                "sleep":  { "heat": 62, "cool": 76 }
+              }
+            %}
+            {% set system = "cool" %}
+            {% set period = states("sensor.schedule") %}
+            Current system is {{ system }} and period {{ period }}
+            Temperature {{ targets[period][system] }}

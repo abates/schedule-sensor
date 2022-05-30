@@ -1,10 +1,9 @@
 {
-  "domain": "schedule_sensor",
+  "domain": "schedule",
+  "version": "1.0.0",
   "name": "Schedule Sensor",
-  "documentation": "https://github.com/abates/schedule-sensor",
-  "issue_tracker": "https://github.com/abates/schedule-sensor/issues",
+  "documentation": "./",
   "dependencies": [],
-  "config_flow": true,
-  "codeowners": ["@abates"],
+  "codeowners": [],
   "requirements": []
 }

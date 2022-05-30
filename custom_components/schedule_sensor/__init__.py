@@ -1,110 +1,58 @@
-"""
-Custom integration to integrate Schedule Sensor with Home Assistant.
+# Copyright 2020 Andrew Bates
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-For more details about this integration, please refer to
-https://github.com/abates/schedule-sensor
-"""
-import asyncio
-import logging
-from datetime import timedelta
+"""An integration that creates schedule sensors."""
 
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from homeassistant.helpers.update_coordinator import UpdateFailed
+from datetime import datetime
 
-from .api import ScheduleSensorApiClient
-from .const import CONF_PASSWORD
-from .const import CONF_USERNAME
-from .const import DOMAIN
-from .const import PLATFORMS
-from .const import STARTUP_MESSAGE
+from homeassistant.const import ATTR_DATE, ATTR_TIME
 
-SCAN_INTERVAL = timedelta(seconds=30)
+DOMAIN = "schedule"
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+ATTR_SCHEDULE = "schedule"
+ATTR_SCHEDULES = "schedules"
+ATTR_INTERVAL = "interval"
+ATTR_NEXT_UPDATE = "next_update"
+ATTR_DATE_TEMPLATE = f"{ATTR_DATE}_template"
+ATTR_TIME_TEMPLATE = f"{ATTR_TIME}_template"
 
+DATE_FORMATS = [
+    "%m/%d",
+    "%Y/%m/%d",
+    "%Y-%m-%d",
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M:%S.%f",
+]
 
-async def async_setup(hass: HomeAssistant, config: Config):
-    """Set up this integration using YAML is not supported."""
-    return True
-
-
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up this integration using UI."""
-    if hass.data.get(DOMAIN) is None:
-        hass.data.setdefault(DOMAIN, {})
-        _LOGGER.info(STARTUP_MESSAGE)
-
-    username = entry.data.get(CONF_USERNAME)
-    password = entry.data.get(CONF_PASSWORD)
-
-    session = async_get_clientsession(hass)
-    client = ScheduleSensorApiClient(username, password, session)
-
-    coordinator = ScheduleSensorDataUpdateCoordinator(hass, client=client)
-    await coordinator.async_refresh()
-
-    if not coordinator.last_update_success:
-        raise ConfigEntryNotReady
-
-    hass.data[DOMAIN][entry.entry_id] = coordinator
-
-    for platform in PLATFORMS:
-        if entry.options.get(platform, True):
-            coordinator.platforms.append(platform)
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
-
-    entry.add_update_listener(async_reload_entry)
-    return True
+TIME_FORMATS = ["%H:%M", "%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f"]
 
 
-class ScheduleSensorDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the API."""
-
-    def __init__(
-        self,
-        hass: HomeAssistant,
-        client: ScheduleSensorApiClient,
-    ) -> None:
-        """Initialize."""
-        self.api = client
-        self.platforms = []
-
-        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
-
-    async def _async_update_data(self):
-        """Update data via library."""
+def _parse(value: str, formats):
+    for fmt in formats:
         try:
-            return await self.api.async_get_data()
-        except Exception as exception:
-            raise UpdateFailed() from exception
+            return datetime.strptime(value, fmt)
+        except ValueError:
+            pass
+
+    raise ValueError(f"{input} is not a recognized date/time")
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Handle removal of an entry."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in PLATFORMS
-                if platform in coordinator.platforms
-            ]
-        )
-    )
-    if unloaded:
-        hass.data[DOMAIN].pop(entry.entry_id)
-
-    return unloaded
+def parse_date(value: str):
+    """Parse a string into a date object."""
+    return _parse(value, DATE_FORMATS).date()
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+def parse_time(value: str):
+    """Parse a string into a time object."""
+    return _parse(value, TIME_FORMATS).time()
