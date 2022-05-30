@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Test that the ScheduleSensor works."""
-
 from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock
 
+from custom_components.schedule_sensor.schedule import DateSlot
+from custom_components.schedule_sensor.schedule import Schedule
+from custom_components.schedule_sensor.schedule import TimeSlot
 from homeassistant.util import dt as dt_util
-
-from custom_components.schedule_sensor.schedule import DateSlot, Schedule, TimeSlot
 
 
 class TestScheduleSlot(TestCase):

@@ -35,8 +35,8 @@ sensor:
 automation:
   - alias: Set Temperature Based On Work Days
     trigger:
-    - platform: state
-      entity_id: sensor.schedule
+      - platform: state
+        entity_id: sensor.schedule
     action:
       - service: logbook.log
         data_template:

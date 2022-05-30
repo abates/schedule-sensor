@@ -12,30 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Platform for sensor integration."""
-
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
-from homeassistant.const import ATTR_DATE, ATTR_NAME, ATTR_TIME, CONF_CONDITION
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import condition
 import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
+from homeassistant.const import ATTR_DATE
+from homeassistant.const import ATTR_NAME
+from homeassistant.const import ATTR_TIME
+from homeassistant.const import CONF_CONDITION
+from homeassistant.core import callback
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import condition
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_utc_time
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.typing import DiscoveryInfoType
 from homeassistant.util import dt as dt_util
-import voluptuous as vol
 
-from . import (
-    ATTR_DATE_TEMPLATE,
-    ATTR_SCHEDULE,
-    ATTR_SCHEDULES,
-    ATTR_TIME_TEMPLATE,
-    parse_date,
-    parse_time,
-)
-from .schedule import DateSlot, Schedule, TimeSlot
+from . import ATTR_DATE_TEMPLATE
+from . import ATTR_SCHEDULE
+from . import ATTR_SCHEDULES
+from . import ATTR_TIME_TEMPLATE
+from . import parse_date
+from . import parse_time
+from .schedule import DateSlot
+from .schedule import Schedule
+from .schedule import TimeSlot
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -11,12 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """An integration that creates schedule sensors."""
-
 from datetime import datetime
 
-from homeassistant.const import ATTR_DATE, ATTR_TIME
+from homeassistant.const import ATTR_DATE
+from homeassistant.const import ATTR_TIME
 
 DOMAIN = "schedule"
 

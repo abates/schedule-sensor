@@ -12,28 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Test that the ScheduleSensor works."""
-
-from datetime import date, datetime, time
+from datetime import date
+from datetime import datetime
+from datetime import time
 from unittest import TestCase
 from unittest.mock import MagicMock
 
 import voluptuous as vol
-
+from custom_components.schedule_sensor.schedule import DateSlot
+from custom_components.schedule_sensor.schedule import parse_date
+from custom_components.schedule_sensor.schedule import parse_time
+from custom_components.schedule_sensor.schedule import Schedule
+from custom_components.schedule_sensor.sensor import _DATE_SCHEMA
+from custom_components.schedule_sensor.sensor import _SCHEDULE_SCHEMA
+from custom_components.schedule_sensor.sensor import _TIME_SCHEMA
+from custom_components.schedule_sensor.sensor import ScheduleSensor
 from homeassistant.util import dt as dt_util
-
-from custom_components.schedule_sensor.schedule import (
-    parse_date,
-    parse_time,
-    Schedule,
-    DateSlot,
-)
-
-from custom_components.schedule_sensor.sensor import (
-    _DATE_SCHEMA,
-    _SCHEDULE_SCHEMA,
-    _TIME_SCHEMA,
-    ScheduleSensor,
-)
 
 
 class TestDateTimeParsing(TestCase):
