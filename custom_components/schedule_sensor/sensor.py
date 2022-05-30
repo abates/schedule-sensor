@@ -14,19 +14,18 @@
 """Platform for sensor integration."""
 
 from datetime import timedelta
-
 import logging
-import voluptuous as vol
 
 from homeassistant.const import ATTR_DATE, ATTR_NAME, ATTR_TIME, CONF_CONDITION
-from homeassistant.core import callback, HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import condition
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_utc_time
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import dt as dt_util
+import voluptuous as vol
 
 from . import (
     ATTR_DATE_TEMPLATE,
