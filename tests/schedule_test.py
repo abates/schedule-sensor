@@ -23,26 +23,33 @@ from homeassistant.util import dt as dt_util
 
 
 class TestScheduleSlot(TestCase):
-    def time(self, hour, minute):
-        return datetime(2010, 1, 1, hour, minute, 0)
-
-    def date(self, month, day):
-        return datetime(2010, month, day, 0, 0, 0)
+    """Test a schedule slot"""
 
     def setUp(self):
         self.as_local = dt_util.as_local
+        self.time = lambda hour, minute: datetime(2010, 1, 1, hour, minute, 0)
+        self.date = lambda month, day: datetime(2010, month, day, 0, 0, 0)
         dt_util.as_local = MagicMock(return_value=datetime(2010, 1, 1, 0, 0, 0))
 
     def tearDown(self):
         dt_util.as_local = self.as_local
 
+    def test_name_property(self):
+        """Confirm name property matches supplied name argument"""
+        timeslot = TimeSlot("Test Name", None)
+        self.assertEqual("Test Name", timeslot.name)
+
     def test_after(self):
+        """Test the after method"""
+
         self.assertTrue(TimeSlot("", self.time(1, 0).time()).after(self.time(0, 0)))
         self.assertFalse(TimeSlot("", self.time(1, 0).time()).after(self.time(1, 0)))
         self.assertTrue(DateSlot("", self.date(12, 1).date()).after(self.date(11, 1)))
         self.assertFalse(DateSlot("", self.date(11, 1).date()).after(self.date(12, 1)))
 
     def test_active_at(self):
+        """Test the active_at method"""
+
         self.assertTrue(TimeSlot("", self.time(0, 0).time()).active_at(self.time(0, 0)))
         self.assertTrue(TimeSlot("", self.time(1, 0).time()).active_at(self.time(2, 0)))
         self.assertTrue(
@@ -51,6 +58,8 @@ class TestScheduleSlot(TestCase):
 
 
 class TestSchedule(TestCase):
+    """Test schedule instances"""
+
     def time(self, hour, minute):
         return datetime(2010, 1, 1, hour, minute, 0)
 
