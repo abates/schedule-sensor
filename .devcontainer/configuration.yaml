@@ -9,7 +9,7 @@ logger:
 # debugpy:
 
 sensor:
-  - platform: schedule
+  - platform: schedule_sensor
     name: Season
     schedule:
       - { name: "winter", date: "01/01" }
@@ -20,7 +20,7 @@ sensor:
       - { name: "thanksgiving", date: "11/1" }
       - { name: "christmas", date: "12/1" }
 
-  - platform: schedule
+  - platform: schedule_sensor
     name: schedule
     schedule:
       - { name: wake, time: "5:00" }

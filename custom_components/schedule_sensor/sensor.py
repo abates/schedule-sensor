@@ -28,7 +28,6 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.typing import ConfigType
-from homeassistant.helpers.typing import DiscoveryInfoType
 from homeassistant.util import dt as dt_util
 
 from . import ATTR_DATE_TEMPLATE
@@ -95,7 +94,7 @@ async def async_setup_platform(
     config: ConfigType,
     async_add_entities: AddEntitiesCallback,
     # pylint: disable=unused-argument
-    discovery_info: DiscoveryInfoType | None = None,
+    discovery_info,
 ):
     """Set up the sensor platform."""
     scheds_config = config.get(ATTR_SCHEDULES)
